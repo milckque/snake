@@ -24,6 +24,36 @@ struct Apple {
     int x, y;
 } apple;
 
+bool IsSnakeAt(int x, int y) {
+    for (int i = 0; i < num; i++) {
+        if (snake[i].x == x && snake[i].y == y) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void PlaceApple() {
+    int emptySquares[N * M][2];
+    int emptyCount = 0;
+    
+    // finding all empty squares
+    for (int x = 0; x < N; x++) {
+        for (int y = 0; y < M; y++) {
+            if (!IsSnakeAt(x, y)) {
+                emptySquares[emptyCount][0] = x;
+                emptySquares[emptyCount][1] = y;
+                emptyCount++;
+            }
+        }
+    }
+    
+    // picking one empty square randomly
+    int randomIndex = rand() % emptyCount;
+    apple.x = emptySquares[randomIndex][0];
+    apple.y = emptySquares[randomIndex][1];
+}
+
 void ResetGame() {
     num = 4;
 
@@ -34,8 +64,7 @@ void ResetGame() {
     snake[3].x = 7;  snake[3].y = 10;
 
     // initial apple position
-    apple.x = 15;
-    apple.y = 10;
+    PlaceApple();
 
     dir = 2;
     gameOver = false;
@@ -83,6 +112,7 @@ int main() {
     RenderWindow window(VideoMode(Vector2u(W, H)), "Snake");
 
     Texture backgroundTexture, snakeTexture, appleTexture;
+
     // background texture, white
     if (!backgroundTexture.loadFromFile("images/white.png")) {
         // error handling, create a white texture programmatically
@@ -106,13 +136,12 @@ int main() {
 
     ResetGame();
 
-
     // timer for movement
     Clock clock;
     float timer = 0;
     const float delay = 0.2f; // movement speed
 
-
+    // game loop
     while (window.isOpen()) {
         float time = clock.getElapsedTime().asSeconds();
         clock.restart();
