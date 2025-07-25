@@ -1,16 +1,49 @@
-#include <iostream>
+#include <SFML/Graphics.hpp>
+#include <optional>
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+using namespace sf;
+
 int main() {
-    // TIP Press <shortcut actionId="RenameElement"/> when your caret is at the <b>lang</b> variable name to see how CLion can help you rename it.
-    auto lang = "C++";
-    std::cout << "Hello and welcome to " << lang << "!\n";
+    RenderWindow window(VideoMode(Vector2u(800, 600)), "Snake");
 
-    for (int i = 1; i <= 5; i++) {
-        // TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-        std::cout << "i = " << i << std::endl;
+    Texture white, green, red;
+    // background texture, white
+    if (!white.loadFromFile("images/white.png")) {
+        // error handling, create a white texture programmatically
+        Image whiteImage(Vector2u(20, 20), Color::White);
+        if (!white.loadFromImage(whiteImage)) {}
+    }
+    // snake texture, green
+    if (!green.loadFromFile("images/green.png")) {
+        Image greenImage(Vector2u(20, 20), Color::Green);
+        if (!green.loadFromImage(greenImage)) {}
+    }
+    // apple texture, red
+    if (!red.loadFromFile("images/red.png")) {
+        Image redImage(Vector2u(20, 20), Color::Red);
+        if (!red.loadFromImage(redImage)) {}
+    }
+
+    Sprite sprite1(white);
+    sprite1.setPosition(Vector2f(100, 100));
+    Sprite sprite2(green);
+    sprite2.setPosition(Vector2f(140, 140));
+    Sprite sprite3(red);
+    sprite3.setPosition(Vector2f(180, 180));
+
+    while (window.isOpen()) {
+        while (std::optional<Event> event = window.pollEvent()) {
+            if (event->is<Event::Closed>()) {
+                window.close();
+            }
+        }
+
+        window.draw(sprite1);
+        window.draw(sprite2);
+        window.draw(sprite3);
+
+        window.display();
     }
 
     return 0;
-    // TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
 }

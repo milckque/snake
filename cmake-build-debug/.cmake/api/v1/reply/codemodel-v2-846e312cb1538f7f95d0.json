@@ -9,7 +9,7 @@
 					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
-						"string" : "3.31"
+						"string" : "3.16"
 					},
 					"projectIndex" : 0,
 					"source" : ".",
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "snake::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-snake-Debug-e9605ce46f90dcf6c264.json",
+					"jsonFile" : "target-snake-Debug-ebf0bafd27e0c3d02d5a.json",
 					"name" : "snake",
 					"projectIndex" : 0
 				}
