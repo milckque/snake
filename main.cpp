@@ -3,33 +3,36 @@
 
 using namespace sf;
 
-int main() {
-    RenderWindow window(VideoMode(Vector2u(800, 600)), "Snake");
+const int size = 16; // size of each grid
+const int N = 30;  // grid width
+const int M = 20;  // grid height
+const int W = size * N; // window width
+const int H = size * M; // window height
 
-    Texture white, green, red;
+int main() {
+    RenderWindow window(VideoMode(Vector2u(W, H)), "Snake");
+
+    Texture backgroundTexture, snakeTexture, appleTexture;
     // background texture, white
-    if (!white.loadFromFile("images/white.png")) {
+    if (!backgroundTexture.loadFromFile("images/white.png")) {
         // error handling, create a white texture programmatically
-        Image whiteImage(Vector2u(20, 20), Color::White);
-        if (!white.loadFromImage(whiteImage)) {}
+        Image whiteImage(Vector2u(size, size), Color::White);
+        if (!backgroundTexture.loadFromImage(whiteImage)) {}
     }
     // snake texture, green
-    if (!green.loadFromFile("images/green.png")) {
-        Image greenImage(Vector2u(20, 20), Color::Green);
-        if (!green.loadFromImage(greenImage)) {}
+    if (!snakeTexture.loadFromFile("images/green.png")) {
+        Image greenImage(Vector2u(size, size), Color::Green);
+        if (!snakeTexture.loadFromImage(greenImage)) {}
     }
     // apple texture, red
-    if (!red.loadFromFile("images/red.png")) {
-        Image redImage(Vector2u(20, 20), Color::Red);
-        if (!red.loadFromImage(redImage)) {}
+    if (!appleTexture.loadFromFile("images/red.png")) {
+        Image redImage(Vector2u(size, size), Color::Red);
+        if (!appleTexture.loadFromImage(redImage)) {}
     }
 
-    Sprite sprite1(white);
-    sprite1.setPosition(Vector2f(100, 100));
-    Sprite sprite2(green);
-    sprite2.setPosition(Vector2f(140, 140));
-    Sprite sprite3(red);
-    sprite3.setPosition(Vector2f(180, 180));
+    Sprite backgroundSprite(backgroundTexture);
+    Sprite snakeSprite(snakeTexture);
+    Sprite appleSprite(appleTexture);
 
     while (window.isOpen()) {
         while (std::optional<Event> event = window.pollEvent()) {
@@ -38,9 +41,13 @@ int main() {
             }
         }
 
-        window.draw(sprite1);
-        window.draw(sprite2);
-        window.draw(sprite3);
+        // drawing background grid
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < M; j++) {
+                backgroundSprite.setPosition(Vector2f(i * size, j * size));
+                window.draw(backgroundSprite);
+            }
+        }
 
         window.display();
     }
