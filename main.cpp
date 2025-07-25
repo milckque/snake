@@ -1,5 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <optional>
+#include <cstdlib>
+#include <time.h>
 
 using namespace sf;
 
@@ -8,32 +10,72 @@ const int N = 30;  // grid width
 const int M = 20;  // grid height
 const int W = size * N; // window width
 const int H = size * M; // window height
+bool gameOver = false;
 
+// snake structure
 struct Snake {
     int x, y;
 } snake[N * M];
-
 int num = 4; // snake length
 int dir = 2; // direction snake is facing
 
+// apple structure
+struct Apple {
+    int x, y;
+} apple;
+
+void ResetGame() {
+    num = 4;
+
+    // initial snake position
+    snake[0].x = 10; snake[0].y = 10;
+    snake[1].x = 9;  snake[1].y = 10;
+    snake[2].x = 8;  snake[2].y = 10;
+    snake[3].x = 7;  snake[3].y = 10;
+
+    // initial apple position
+    apple.x = 15;
+    apple.y = 10;
+
+    dir = 2;
+    gameOver = false;
+}
+
 void Tick() {
-    // move body segments
+    if (gameOver) return;
+
+    // moving body segments
     for (int i = num; i > 0; --i) {
         snake[i].x = snake[i-1].x;
         snake[i].y = snake[i-1].y;
     }
 
-    // move head based on direction
+    // moving head based on direction
     if (dir == 0) snake[0].y += 1; // down
     if (dir == 1) snake[0].x -= 1; // left
     if (dir == 2) snake[0].x += 1; // right
     if (dir == 3) snake[0].y -= 1; // up
 
-    // simple wrapping
-    if (snake[0].x >= N) snake[0].x = 0;
-    if (snake[0].x < 0) snake[0].x = N - 1;
-    if (snake[0].y >= M) snake[0].y = 0;
-    if (snake[0].y < 0) snake[0].y = M - 1;
+    // checking wall collision
+    if (snake[0].x >= N || snake[0].x < 0 || snake[0].y >= M || snake[0].y < 0) {
+        gameOver = true;
+        return;
+    }
+
+    // checking self collision
+    for (int i = 1; i < num; i++) {
+        if (snake[0].x == snake[i].x && snake[0].y == snake[i].y) {
+            gameOver = true;
+            return;
+        }
+    }
+
+    // checking if snake ate apple
+    if (snake[0].x == apple.x && snake[0].y == apple.y) {
+        num++;
+        apple.x = rand() % N;
+        apple.y = rand() % M;
+    }
 }
 
 
@@ -62,11 +104,8 @@ int main() {
     Sprite snakeSprite(snakeTexture);
     Sprite appleSprite(appleTexture);
 
-    // initial snake position
-    snake[0].x = 10; snake[0].y = 10;
-    snake[1].x = 9;  snake[1].y = 10;
-    snake[2].x = 8;  snake[2].y = 10;
-    snake[3].x = 7;  snake[3].y = 10;
+    ResetGame();
+
 
     // timer for movement
     Clock clock;
@@ -86,10 +125,17 @@ int main() {
         }
 
         // handling keyboard input, and preventing opposite direction inputs
-        if (Keyboard::isKeyPressed(Keyboard::Key::Left) && dir != 2) { dir = 1; }
-        if (Keyboard::isKeyPressed(Keyboard::Key::Right) && dir != 1) { dir = 2; }
-        if (Keyboard::isKeyPressed(Keyboard::Key::Up) && dir != 0) { dir = 3; }
-        if (Keyboard::isKeyPressed(Keyboard::Key::Down) && dir != 3) { dir = 0; }
+        if (!gameOver) {
+            if (Keyboard::isKeyPressed(Keyboard::Key::Left) && dir != 2) dir = 1;
+            if (Keyboard::isKeyPressed(Keyboard::Key::Right) && dir != 1) dir = 2;
+            if (Keyboard::isKeyPressed(Keyboard::Key::Up) && dir != 0) dir = 3;
+            if (Keyboard::isKeyPressed(Keyboard::Key::Down) && dir != 3) dir = 0;
+        }
+
+        // resetting the game when space is pressed after game over
+        if (gameOver && Keyboard::isKeyPressed(Keyboard::Key::Space)) {
+            ResetGame();
+        }
 
         // updating game logic
         if (timer > delay) {
@@ -114,6 +160,10 @@ int main() {
             window.draw(snakeSprite);
         }
 
+        // drawing apple
+        appleSprite.setPosition(Vector2f(apple.x * size, apple.y * size));
+        window.draw(appleSprite);
+        
         window.display();
     }
 
