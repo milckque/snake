@@ -24,7 +24,10 @@ void Tick() {
     }
 
     // move head based on direction
+    if (dir == 0) snake[0].y += 1; // down
+    if (dir == 1) snake[0].x -= 1; // left
     if (dir == 2) snake[0].x += 1; // right
+    if (dir == 3) snake[0].y -= 1; // up
 
     // simple wrapping
     if (snake[0].x >= N) snake[0].x = 0;
@@ -81,6 +84,12 @@ int main() {
                 window.close();
             }
         }
+
+        // handling keyboard input, and preventing opposite direction inputs
+        if (Keyboard::isKeyPressed(Keyboard::Key::Left) && dir != 2) { dir = 1; }
+        if (Keyboard::isKeyPressed(Keyboard::Key::Right) && dir != 1) { dir = 2; }
+        if (Keyboard::isKeyPressed(Keyboard::Key::Up) && dir != 0) { dir = 3; }
+        if (Keyboard::isKeyPressed(Keyboard::Key::Down) && dir != 3) { dir = 0; }
 
         // updating game logic
         if (timer > delay) {
